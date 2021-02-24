@@ -9,7 +9,7 @@ void memory_init(void *ptr, unsigned int size);
 int main()
 {
     printf("Ahoj !");
-
+    printf("Ez Ez\n");
 
     return 0;
 
