@@ -89,7 +89,7 @@ void *memory_alloc(unsigned int size) {
      //  []   [] –> []
      tmp_pointer->dalsi = ptr->dalsi; // - spojím dalej dalšej hlavičke vždy davam proste idem dalej
      //  []-> []   []
-     ptr->dalsi = tmp_pointer; // posúvam sa dalej
+     ptr->dalsi = tmp_pointer; // posúvam sa dalej prifávam ešte komentár
 
      return tmp_pointer + sizeof(HEAD);
 
