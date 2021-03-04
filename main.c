@@ -71,15 +71,16 @@ void *best_fit(unsigned int size) {
     return najlepsi_blok;
 
 /*
+
     while (hladam_moznost->dalsi != NULL) {
         if (hladam_moznost->size >= size) {
             printf("RETURN: %d || ADRESS: %d\n",hladam_moznost->size,hladam_moznost);
             return hladam_moznost;
         }
-        hladam_moznost->dalsi;
+        hladam_moznost= hladam_moznost->dalsi;
     }
-    */
 
+*/
 
 }
 
@@ -98,13 +99,6 @@ void *memory_alloc(unsigned int size) {
     void *allokator = best_fit(size);
 
     void *tmp_free = allokator;
-
-    //printf("Memory alloc... %d\n",size);
-
-    //return NULL;
-    // 140732669187620
-    // 140732669201236
-
 
     if (allokator == NULL){
        // printf("NULL \n");
@@ -125,7 +119,7 @@ void *memory_alloc(unsigned int size) {
 
     tmp_free = tmp_free + sizeof(HEAD) + size; // presúvam sa za payload + hlavičku
 
-    ((HEAD*)tmp_free)->size = ((HEAD*)allokator)->size - size ; //nastavujem veľkosť volného bloku pamate
+    ((HEAD*)tmp_free)->size = ((HEAD*)allokator)->size - size - sizeof(HEAD);  //nastavujem veľkosť volného bloku pamate
 
     ((HEAD*)tmp_free)->obsadeny = 0;
 
@@ -133,12 +127,11 @@ void *memory_alloc(unsigned int size) {
     //  []   [] –> []
     ((HEAD*)tmp_free)->dalsi = ((HEAD*)allokator)->dalsi; // - spojím dalej dalšej hlavičke vždy davam proste idem dalej
     //  []-> []   []
-
     ((HEAD*)allokator)->dalsi = tmp_free; // spájam obsadený blok s voľným
 
 
-    printf("   (%d)   \n",tmp_free);
-    return tmp_free ;
+    printf("   (%d)   \n", allokator+sizeof(HEAD));
+    return (void*) allokator + sizeof(HEAD) ;
 
 }
 
