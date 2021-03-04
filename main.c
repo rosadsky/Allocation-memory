@@ -13,27 +13,47 @@ int memory_check(void *ptr);
 typedef struct hlavicka {
     void *dalsi;
     unsigned int size;
-    unsigned int  obsadeny;
+    unsigned int obsadeny;
 } HEAD;
 
 void memory_init(void *ptr, int size) {
-    ukazovatel = ptr;
-    ((HEAD*)ukazovatel)->size = size - sizeof(HEAD);
-    ((HEAD*)ukazovatel)->dalsi = ukazovatel + sizeof(HEAD);
 
-    HEAD *temp = ((HEAD*)ukazovatel)->dalsi;
+    printf("Inicializácia pamate\n");
+    ukazovatel = ptr;
+    ((HEAD *) ukazovatel)->size = size - sizeof(HEAD);
+    ((HEAD *) ukazovatel)->dalsi = ukazovatel + sizeof(HEAD);
+
+
+
+    HEAD *temp = ((HEAD *) ukazovatel)->dalsi;
     temp->dalsi = NULL;
-    temp->size = size - 2*(sizeof(HEAD));
+    temp->size = size - 2 * (sizeof(HEAD));
     temp->obsadeny = 0;
+
+    /*
+        printf("Inicializácia pamate\n");
+    ukazovatel = ptr;
+    HEAD *tmp_pointer = (HEAD *)ukazovatel;
+
+
+    tmp_pointer->size = size - sizeof(HEAD);
+    tmp_pointer->dalsi = NULL;
+
+
+    HEAD *temp = ukazovatel + sizeof(HEAD);
+    temp->dalsi = NULL;
+    temp->size = size - 2 * (sizeof(HEAD));
+    temp->obsadeny = 0;
+    tmp_pointer->dalsi = temp;
+     */
 
 }
 
 
 void *best_fit(unsigned int size) {
     HEAD *hladam_moznost = ((HEAD *) ukazovatel)->dalsi;
-     unsigned int najlepsia_moznost = 0;
-     HEAD *najlepsi_blok = NULL;
-
+    unsigned int najlepsia_moznost = 0;
+    HEAD *najlepsi_blok = NULL;
 
 
     while (hladam_moznost != NULL) {
@@ -43,7 +63,7 @@ void *best_fit(unsigned int size) {
                 najlepsi_blok = hladam_moznost;
             }
         }
-       hladam_moznost = hladam_moznost->dalsi;
+        hladam_moznost = hladam_moznost->dalsi;
     }
 
     return najlepsi_blok;
@@ -73,67 +93,98 @@ void *best_fit(unsigned int size) {
 
 void *memory_alloc(unsigned int size) {
 
-      HEAD *ptr = best_fit(size);
+    HEAD *ptr = best_fit(size);
 
-      HEAD *tmp_pointer = ptr;
+    HEAD *tmp_pointer = ptr;
 
-      // ošetriť ak sa mi vráti null
+    if (ptr == NULL){
+        printf("PTR = NULL \n");
+        return NULL;
+    }
 
-      ptr->obsadeny = 1; // obsadený
+    printf("MEMORY ALLOC\n");
 
-     tmp_pointer = tmp_pointer + sizeof(HEAD) + size; // presúvam sa za payload + hlavičku
+    // ošetriť ak sa mi vráti null
 
-     tmp_pointer->size= ptr->size - size; //nastavujem veľkosť volného bloku pamate
+    ptr->obsadeny = 1; // obsadený
 
-     ptr->size = size; // nastavím volnému bloku size
-     //  []   [] –> []
-     tmp_pointer->dalsi = ptr->dalsi; // - spojím dalej dalšej hlavičke vždy davam proste idem dalej
-     //  []-> []   []
-     ptr->dalsi = tmp_pointer; // posúvam sa dalej prifávam ešte komentár
+    tmp_pointer = tmp_pointer + sizeof(HEAD) + size; // presúvam sa za payload + hlavičku
 
-     return tmp_pointer + sizeof(HEAD);
+    tmp_pointer->size = ptr->size - size; //nastavujem veľkosť volného bloku pamate
+
+    ptr->size = size; // nastavím volnému bloku size
+    //  []   [] –> []
+    tmp_pointer->dalsi = ptr->dalsi; // - spojím dalej dalšej hlavičke vždy davam proste idem dalej
+    //  []-> []   []
+    ptr->dalsi = tmp_pointer; // posúvam sa dalej prifávam ešte komentár
+
+
+
+
+    return tmp_pointer + sizeof(HEAD);
 
 
 }
 
-int memory_free(void *valid_ptr){
+int memory_free(void *valid_ptr) {
 
-    HEAD * prehladavac =ukazovatel;
+    HEAD *prehladavac = ukazovatel;
     //príde mi tam adresa toho payloadu
 
     HEAD *tmp_pointer = valid_ptr;
 
-    while (1){
-        if (prehladavac->dalsi == tmp_pointer){ // ak pointer čo prehladava nájde ten môj čo potrebujem free tak
-            if(prehladavac->obsadeny < 1){ // ak je predošlý blok prázdny
-           //[ FREE ] [ ] [ ]
-           //   |----------^
-            prehladavac->dalsi = tmp_pointer->dalsi;
+    HEAD *tmp1_pointer;
+
+
+    while (1) {
+        if (prehladavac->dalsi == tmp_pointer) { // ak épointer čo prehladava nájde ten môj čo potrebujem free tak
+
+            tmp1_pointer = tmp_pointer->dalsi;
+
+            //Ako fungujú pointre podla mojej hlavy
+            //[prehladavac] [tmp_pointer] [ tmp1_pointer]
+
+            /*-----------------------*/
+
+            //[ FREE ] [ x ] [ ]
+            if (prehladavac->obsadeny < 1) { // ak je predošlý blok prázdny
+                //[ FREE ] [ ] [ ]
+                //   |----------^
+                prehladavac->dalsi = tmp_pointer->dalsi;
+
+                break;
             }
 
-            if(prehladavac->obsadeny == 1){
+            /*-----------------------*/
+
+            //[FULL] [ x ] [ FULL ]
+            if (prehladavac->obsadeny == 1 && tmp1_pointer->obsadeny == 1) {
                 tmp_pointer->obsadeny = 0;
+                break;
+            }
+
+            /*-----------------------*/
+
+            //[FULL] [ x ] [    ]
+            if (tmp1_pointer->obsadeny < 0) {
+                tmp_pointer = tmp_pointer->size + sizeof(HEAD) + tmp1_pointer;
+                break;
             }
         }
         // ak je prehladavac prazdny
-
-
-
-
 
         break;
     }
 
 
-
-
-
-
-
-
-
-
 };
+
+
+int memory_check(void *ptr){
+
+    return 1;
+};
+
 
 #include <time.h>
 void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int minMemory, int maxMemory, int testFragDefrag) {
@@ -191,29 +242,11 @@ int main() {
     z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
     return 0;
 }
-/*
-int main() {
-    char pole[1000];
-    //memory_init(pole, 10);
-    void *ptr = ukazovatel;
-    //memory_init(pole, 10);
-
-    memory_alloc(10);
-    memset(ptr, 0, 1000);
-
-
-    while (ptr != NULL) {
-        printf("Velkost %d na bloku %p\n", ((HEAD *) ptr)->size, ptr);
-        ptr = ((HEAD *) ptr)->dalsi;
-    }
-
-
-    return 0;
-
-}
 
 
 
 
-*/
+
+
+
 
