@@ -20,16 +20,18 @@ typedef struct hlavicka {
 
 void memory_init(void *ptr, int size) {
 
-    printf("Inicializácia pamate\n");
     ukazovatel = ptr;
+
+    void *tmp_pointer = ukazovatel;
+
+    memset(ukazovatel,0,size);
+
     ((HEAD *) ukazovatel)->size = size - sizeof(HEAD);
-    ((HEAD *) ukazovatel)->dalsi = ukazovatel + sizeof(HEAD);
-
-
+    ((HEAD *) ukazovatel)->dalsi = tmp_pointer + sizeof(HEAD);
 
     HEAD *temp = ((HEAD *) ukazovatel)->dalsi;
     temp->dalsi = NULL;
-    temp->size = size - 2 * (sizeof(HEAD));
+    temp->size = size - (2 * (sizeof(HEAD)));
     temp->obsadeny = 0;
 
     /*
@@ -59,7 +61,7 @@ void *best_fit(unsigned int size) {
 
 
     while (hladam_moznost != NULL) {
-        if (hladam_moznost->size >= size && hladam_moznost->obsadeny != 1) {
+        if (hladam_moznost->size >= size+sizeof(HEAD) && hladam_moznost->obsadeny != 1) {
             if (hladam_moznost->size < najlepsia_moznost || najlepsia_moznost == 0) {
                 najlepsia_moznost = hladam_moznost->size;
                 najlepsi_blok = hladam_moznost;
@@ -101,7 +103,7 @@ void *memory_alloc(unsigned int size) {
     void *tmp_free = allokator;
 
     if (allokator == NULL){
-       // printf("NULL \n");
+        // printf("NULL \n");
         return NULL;
     }
 
@@ -110,7 +112,7 @@ void *memory_alloc(unsigned int size) {
         return NULL;
     }
 
-    printf("MEMORY ALLOC [%d]\n", sizeof(HEAD) + size);
+    //printf("MEMORY ALLOC [%d]\n", sizeof(HEAD) + size);
 
 
     ((HEAD*)allokator)->obsadeny = 1; // obsadený
@@ -130,10 +132,11 @@ void *memory_alloc(unsigned int size) {
     ((HEAD*)allokator)->dalsi = tmp_free; // spájam obsadený blok s voľným
 
 
-    printf("   (%d)   \n", allokator+sizeof(HEAD));
+    //printf("   (%d)   \n", allokator+sizeof(HEAD));
     return (void*) allokator + sizeof(HEAD) ;
 
 }
+
 
 int memory_free(void *valid_ptr) {
 
