@@ -4,6 +4,7 @@
 
 void *ukazovatel;
 
+
 void *memory_alloc(unsigned int size);
 
 int memory_free(void *valid_ptr);
@@ -15,6 +16,7 @@ typedef struct hlavicka {
     unsigned int size;
     unsigned int obsadeny;
 } HEAD;
+
 
 void memory_init(void *ptr, int size) {
 
@@ -93,36 +95,50 @@ void *best_fit(unsigned int size) {
 
 void *memory_alloc(unsigned int size) {
 
-    HEAD *ptr = best_fit(size);
+    void *allokator = best_fit(size);
 
-    HEAD *tmp_pointer = ptr;
+    void *tmp_free = allokator;
 
-    if (ptr == NULL){
-        printf("PTR = NULL \n");
+    //printf("Memory alloc... %d\n",size);
+
+    //return NULL;
+    // 140732669187620
+    // 140732669201236
+
+
+    if (allokator == NULL){
+       // printf("NULL \n");
         return NULL;
     }
 
-    printf("MEMORY ALLOC\n");
+    if (size < 0){
+        printf("SIZE\n");
+        return NULL;
+    }
 
-    // ošetriť ak sa mi vráti null
+    printf("MEMORY ALLOC [%d]\n", sizeof(HEAD) + size);
 
-    ptr->obsadeny = 1; // obsadený
 
-    tmp_pointer = tmp_pointer + sizeof(HEAD) + size; // presúvam sa za payload + hlavičku
+    ((HEAD*)allokator)->obsadeny = 1; // obsadený
 
-    tmp_pointer->size = ptr->size - size; //nastavujem veľkosť volného bloku pamate
+    //[ | payload | x ].
 
-    ptr->size = size; // nastavím volnému bloku size
+    tmp_free = tmp_free + sizeof(HEAD) + size; // presúvam sa za payload + hlavičku
+
+    ((HEAD*)tmp_free)->size = ((HEAD*)allokator)->size - size ; //nastavujem veľkosť volného bloku pamate
+
+    ((HEAD*)tmp_free)->obsadeny = 0;
+
+    ((HEAD*)allokator)->size = size; // nastavím volnému bloku size
     //  []   [] –> []
-    tmp_pointer->dalsi = ptr->dalsi; // - spojím dalej dalšej hlavičke vždy davam proste idem dalej
+    ((HEAD*)tmp_free)->dalsi = ((HEAD*)allokator)->dalsi; // - spojím dalej dalšej hlavičke vždy davam proste idem dalej
     //  []-> []   []
-    ptr->dalsi = tmp_pointer; // posúvam sa dalej prifávam ešte komentár
+
+    ((HEAD*)allokator)->dalsi = tmp_free; // spájam obsadený blok s voľným
 
 
-
-
-    return tmp_pointer + sizeof(HEAD);
-
+    printf("   (%d)   \n",tmp_free);
+    return tmp_free ;
 
 }
 
@@ -205,7 +221,14 @@ void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int m
             if (pointer[i])
                 i++;
         } while (pointer[i]);
-
+        for (int j = 0; j < i; j++) {
+            if (memory_check(pointer[j])) {
+                //memory_free(pointer[j]);
+            }
+            else {
+                printf("Error: Wrong memory check.\n");
+            }
+        }
     }
     i = 0;
     while (allocated <= random_memory-minBlock) {
@@ -221,7 +244,14 @@ void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int m
             mallocated += random;
         }
     }
-
+    for (int j = 0; j < i; j++) {
+        if (memory_check(pointer[j])) {
+            //memory_free(pointer[j]);
+        }
+        else {
+            printf("Error: Wrong memory check.\n");
+        }
+    }
     memset(region + 500, 0, random_memory);
     for (int j = 0; j < 100000; j++) {
         if (region[j] != 0) {
