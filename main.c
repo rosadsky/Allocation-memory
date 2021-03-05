@@ -103,7 +103,6 @@ void *memory_alloc(unsigned int size) {
     void *tmp_free = allokator;
 
     if (allokator == NULL){
-        // printf("NULL \n");
         return NULL;
     }
 
@@ -111,9 +110,6 @@ void *memory_alloc(unsigned int size) {
         printf("SIZE\n");
         return NULL;
     }
-
-    //printf("MEMORY ALLOC [%d]\n", sizeof(HEAD) + size);
-
 
     ((HEAD*)allokator)->obsadeny = 1; // obsadený
 
@@ -135,6 +131,7 @@ void *memory_alloc(unsigned int size) {
     //printf("   (%d)   \n", allokator+sizeof(HEAD));
     return (void*) allokator + sizeof(HEAD) ;
 
+
 }
 
 
@@ -153,6 +150,7 @@ int memory_free(void *valid_ptr) {
 
             tmp1_pointer = tmp_pointer->dalsi;
 
+
             //Ako fungujú pointre podla mojej hlavy
             //[prehladavac] [tmp_pointer] [ tmp1_pointer]
 
@@ -163,8 +161,7 @@ int memory_free(void *valid_ptr) {
                 //[ FREE ] [ ] [ ]
                 //   |----------^
                 prehladavac->dalsi = tmp_pointer->dalsi;
-
-                break;
+                return 1;
             }
 
             /*-----------------------*/
@@ -172,7 +169,7 @@ int memory_free(void *valid_ptr) {
             //[FULL] [ x ] [ FULL ]
             if (prehladavac->obsadeny == 1 && tmp1_pointer->obsadeny == 1) {
                 tmp_pointer->obsadeny = 0;
-                break;
+                return 1;
             }
 
             /*-----------------------*/
@@ -180,14 +177,13 @@ int memory_free(void *valid_ptr) {
             //[FULL] [ x ] [    ]
             if (tmp1_pointer->obsadeny < 0) {
                 tmp_pointer = tmp_pointer->size + sizeof(HEAD) + tmp1_pointer;
-                break;
+                return 1;
             }
         }
         // ak je prehladavac prazdny
-
-        break;
+        prehladavac = prehladavac->dalsi;
     }
-
+    return 0;
 
 };
 
@@ -219,7 +215,7 @@ void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int m
         } while (pointer[i]);
         for (int j = 0; j < i; j++) {
             if (memory_check(pointer[j])) {
-                //memory_free(pointer[j]);
+                memory_free(pointer[j]);
             }
             else {
                 printf("Error: Wrong memory check.\n");
@@ -242,7 +238,7 @@ void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int m
     }
     for (int j = 0; j < i; j++) {
         if (memory_check(pointer[j])) {
-            //memory_free(pointer[j]);
+            memory_free(pointer[j]);
         }
         else {
             printf("Error: Wrong memory check.\n");
@@ -263,7 +259,7 @@ void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int m
 int main() {
     char region[100000];
     char* pointer[13000];
-    z1_testovac(region, pointer, 8, 24, 50, 100, 1);
+    z1_testovac(region, pointer, 8, 24, 50, 200, 1);
     z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
     z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
     return 0;
