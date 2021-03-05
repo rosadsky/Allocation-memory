@@ -141,23 +141,27 @@ int memory_free(void *valid_ptr) {
 
      void* uvolnovany = valid_ptr - sizeof(HEAD);
 
+     HEAD * tmp_predosly;
+
 
     HEAD *tmp1_pointer;
     printf(" / %d /MEMORY FREE \n",uvolnovany);
     while (prehladavac->dalsi!=NULL){
-        printf("[%d] -> [%d]\n ",prehladavac,prehladavac->dalsi);
+        //printf("[%d] -> [%d]\n ",prehladavac,prehladavac->dalsi);
+        if (prehladavac->obsadeny == 1 ){
+           // printf("obsadeny\n");
+        }
         if (prehladavac == uvolnovany){
             ((HEAD*)uvolnovany)->obsadeny = 0;
             HEAD *tmp_dalsi = prehladavac->dalsi;
             if (tmp_dalsi->obsadeny == 0){
                 ((HEAD*)uvolnovany)->dalsi = uvolnovany + (2*sizeof(HEAD)) + ((HEAD*)uvolnovany)->size + tmp_dalsi->size;
                 ((HEAD*)uvolnovany)->size += sizeof(HEAD) + tmp_dalsi->size;
-                //printf("--------PRAZDNY-------\n");
+                printf("Uvolnuje blok...\n");
             }
-
             break;
         }
-
+        tmp_predosly = prehladavac;
         prehladavac= prehladavac->dalsi;
 
 
@@ -167,7 +171,9 @@ int memory_free(void *valid_ptr) {
     printf("*-----TESTER----*\n");
     while (tester->dalsi!=NULL){
         printf("(%d) -> (%d)\n ",tester,tester->dalsi);
-
+        if (tester->obsadeny==0){
+            printf("FREE - %d\n",tester);
+        }
         tester =tester->dalsi;
     }
 
