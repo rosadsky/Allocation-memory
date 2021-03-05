@@ -141,29 +141,38 @@ int memory_free(void *valid_ptr) {
 
      void* uvolnovany = valid_ptr - sizeof(HEAD);
 
-     HEAD * tmp_predosly;
-
+     void* tmp_predosly= ukazovatel;
+    int i = 0;
 
     HEAD *tmp1_pointer;
-    printf(" / %d /MEMORY FREE \n",uvolnovany);
+    //printf(" / %d /MEMORY FREE \n",uvolnovany);
     while (prehladavac->dalsi!=NULL){
-        //printf("[%d] -> [%d]\n ",prehladavac,prehladavac->dalsi);
-        if (prehladavac->obsadeny == 1 ){
-           // printf("obsadeny\n");
-        }
+        //printf("PREDOSLY - (%d)\n",tmp_predosly);
+        //printf("PREHALDAVAC[%d]->[%d]\n ",prehladavac, prehladavac->dalsi);
+
         if (prehladavac == uvolnovany){
             ((HEAD*)uvolnovany)->obsadeny = 0;
             HEAD *tmp_dalsi = prehladavac->dalsi;
             if (tmp_dalsi->obsadeny == 0){
                 ((HEAD*)uvolnovany)->dalsi = uvolnovany + (2*sizeof(HEAD)) + ((HEAD*)uvolnovany)->size + tmp_dalsi->size;
                 ((HEAD*)uvolnovany)->size += sizeof(HEAD) + tmp_dalsi->size;
-                printf("Uvolnuje blok...\n");
+                //printf("Uvolnuje blok...\n");
+                break;
             }
-            break;
+
+            //ak je predosly free tak...
+            if (((HEAD*)tmp_predosly)->obsadeny == 0 && i>1){
+                ((HEAD*)tmp_predosly)->dalsi = tmp_predosly + (2*sizeof(HEAD)) + ((HEAD*)tmp_predosly)->size + ((HEAD*)uvolnovany)->size;  // posuniem si pointer dalej
+                ((HEAD*)tmp_predosly)->size += sizeof(HEAD) + prehladavac->size;
+                //printf("Uvolnujem blok + free pred ním...\n");
+                break;
+            }
+
+
         }
         tmp_predosly = prehladavac;
         prehladavac= prehladavac->dalsi;
-
+        i++;
 
     }
 
