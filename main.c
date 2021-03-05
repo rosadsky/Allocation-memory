@@ -106,10 +106,7 @@ void *memory_alloc(unsigned int size) {
         return NULL;
     }
 
-    if (size < 0){
-        printf("SIZE\n");
-        return NULL;
-    }
+    printf("ALLOC(%d)\n",size);
 
     ((HEAD*)allokator)->obsadeny = 1; // obsadený
 
@@ -140,11 +137,43 @@ int memory_free(void *valid_ptr) {
     HEAD *prehladavac = ukazovatel;
     //príde mi tam adresa toho payloadu
 
-    HEAD *tmp_pointer = valid_ptr;
+    HEAD *tester = ukazovatel;
+
+     void* uvolnovany = valid_ptr - sizeof(HEAD);
+
 
     HEAD *tmp1_pointer;
+    printf(" / %d /MEMORY FREE \n",uvolnovany);
+    while (prehladavac->dalsi!=NULL){
+        printf("[%d] -> [%d]\n ",prehladavac,prehladavac->dalsi);
+        if (prehladavac == uvolnovany){
+            ((HEAD*)uvolnovany)->obsadeny = 0;
+            HEAD *tmp_dalsi = prehladavac->dalsi;
+            if (tmp_dalsi->obsadeny == 0){
+                ((HEAD*)uvolnovany)->dalsi = uvolnovany + (2*sizeof(HEAD)) + ((HEAD*)uvolnovany)->size + tmp_dalsi->size;
+                ((HEAD*)uvolnovany)->size += sizeof(HEAD) + tmp_dalsi->size;
+                //printf("--------PRAZDNY-------\n");
+            }
+
+            break;
+        }
+
+        prehladavac= prehladavac->dalsi;
 
 
+    }
+
+
+    printf("*-----TESTER----*\n");
+    while (tester->dalsi!=NULL){
+        printf("(%d) -> (%d)\n ",tester,tester->dalsi);
+
+        tester =tester->dalsi;
+    }
+
+
+
+/*
     while (1) {
         if (prehladavac->dalsi == tmp_pointer) { // ak épointer čo prehladava nájde ten môj čo potrebujem free tak
 
@@ -154,7 +183,7 @@ int memory_free(void *valid_ptr) {
             //Ako fungujú pointre podla mojej hlavy
             //[prehladavac] [tmp_pointer] [ tmp1_pointer]
 
-            /*-----------------------*/
+
 
             //[ FREE ] [ x ] [ ]
             if (prehladavac->obsadeny < 1) { // ak je predošlý blok prázdny
@@ -164,7 +193,7 @@ int memory_free(void *valid_ptr) {
                 return 1;
             }
 
-            /*-----------------------*/
+
 
             //[FULL] [ x ] [ FULL ]
             if (prehladavac->obsadeny == 1 && tmp1_pointer->obsadeny == 1) {
@@ -172,7 +201,7 @@ int memory_free(void *valid_ptr) {
                 return 1;
             }
 
-            /*-----------------------*/
+
 
             //[FULL] [ x ] [    ]
             if (tmp1_pointer->obsadeny < 0) {
@@ -183,7 +212,8 @@ int memory_free(void *valid_ptr) {
         // ak je prehladavac prazdny
         prehladavac = prehladavac->dalsi;
     }
-    return 0;
+*/
+
 
 };
 
@@ -253,15 +283,15 @@ void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int m
     }
     float result = ((float)mallocated_count / allocated_count) * 100;
     float result_bytes = ((float)mallocated / allocated) * 100;
-    printf("Memory size of %d bytes: allocated %.2f%% blocks (%.2f%% bytes).\n", random_memory, result, result_bytes);
+    printf("\nMemory size of %d bytes: allocated %.2f%% blocks (%.2f%% bytes).\n", random_memory, result, result_bytes);
 }
 
 int main() {
     char region[100000];
     char* pointer[13000];
-    z1_testovac(region, pointer, 8, 24, 50, 200, 1);
-    z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
-    z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
+    z1_testovac(region, pointer, 8, 24, 50, 300, 1);
+    //z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
+   // z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
     return 0;
 }
 
