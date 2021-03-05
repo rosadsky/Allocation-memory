@@ -106,7 +106,7 @@ void *memory_alloc(unsigned int size) {
         return NULL;
     }
 
-    printf("ALLOC(%d)\n",size);
+    //printf("ALLOC(%d)\n",size);
 
     ((HEAD*)allokator)->obsadeny = 1; // obsadený
 
@@ -176,7 +176,7 @@ int memory_free(void *valid_ptr) {
 
     }
 
-
+    /*
     printf("*-----TESTER----*\n");
     while (tester->dalsi!=NULL){
         printf("(%d) -> (%d)\n ",tester,tester->dalsi);
@@ -185,7 +185,7 @@ int memory_free(void *valid_ptr) {
         }
         tester =tester->dalsi;
     }
-
+    */
 
 
 /*
@@ -234,6 +234,56 @@ int memory_free(void *valid_ptr) {
 
 
 int memory_check(void *ptr){
+
+    HEAD *tmp = ptr;
+
+    HEAD *prehladavac = ukazovatel;
+
+    HEAD *zaciatok = ukazovatel;
+    HEAD *koniec = ukazovatel;
+
+    printf("MEMORY CHECKUJEM: ( %d )\n", tmp );
+
+    printf("%d < %d\n",ptr,zaciatok);
+    if (ptr < zaciatok ){
+        printf("Je mimo na začiatku...\n");
+    }
+
+    while (prehladavac->dalsi != NULL){
+
+        //printf("%d < %d\n",prehladavac,tmp);
+     /*   if (prehladavac < tmp){
+            printf("TRUE\n");
+
+        }*/
+
+        printf("[%d]\n",prehladavac + sizeof(HEAD));
+        prehladavac= prehladavac->dalsi;
+
+
+        if (prehladavac->dalsi == NULL){
+            printf("Kontrola začiatku konca (%d)<(%d)\n",prehladavac,tmp);
+
+            if (prehladavac < tmp){
+                printf("JE MIMO\n");
+            }
+        }
+
+
+    }
+
+
+
+    // idem robit memory check
+    // musím zistiť či náhodou ten pointer, ktorý príde nieje v neolakovanom priestore
+    // ak je NULL ruturn 0
+    // či nieje pred hlavičkou
+    // či nieje mimo celého memory poolu
+    // či sa nenachádza v payloade
+    // on musí byť nazačiatku payloadu
+    // nemože byť na miestach hlavička + velkosť hlavičky
+    // ak je v strede payloadu tak rip
+    // ak je na začiatku payloadu tak veľkosť hlavičky, ktorá prislúcha payloadu je volna  tak return NULL;
 
     return 1;
 };
@@ -306,7 +356,7 @@ int main() {
     char* pointer[13000];
     z1_testovac(region, pointer, 8, 24, 50, 300, 1);
     //z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
-   // z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
+    //z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
     return 0;
 }
 
