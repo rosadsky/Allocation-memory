@@ -242,11 +242,12 @@ int memory_check(void *ptr){
     HEAD *zaciatok = ukazovatel;
     HEAD *koniec = ukazovatel;
 
-    printf("MEMORY CHECKUJEM: ( %d )\n", tmp );
+    printf("MEMORY CHECKUJEM: ( %d ) *------------------------------*\n", tmp );
 
-    printf("%d < %d\n",ptr,zaciatok);
+    printf("PRED ZACIATKOM ? |%d| < |%d|\n",ptr,zaciatok);
+
     if (ptr < zaciatok ){
-        printf("Je mimo na začiatku...\n");
+        printf("Je mimo na začiatku 1...\n");
     }
 
     while (prehladavac->dalsi != NULL){
@@ -257,18 +258,21 @@ int memory_check(void *ptr){
 
         }*/
 
-        printf("[%d]\n",prehladavac + sizeof(HEAD));
+        printf("[%d]\n",prehladavac);
+
+        if (ptr > zaciatok && ptr < prehladavac ){
+            printf("Je v strede...\n");
+        }
+
+        koniec = prehladavac;
         prehladavac= prehladavac->dalsi;
 
-
         if (prehladavac->dalsi == NULL){
-            printf("Kontrola začiatku konca (%d)<(%d)\n",prehladavac,tmp);
-
-            if (prehladavac < tmp){
+            printf("ZA KONCOM ? |%d|>|%d|\n\n",ptr,koniec);
+            if (ptr > koniec){
                 printf("JE MIMO\n");
             }
         }
-
 
     }
 
