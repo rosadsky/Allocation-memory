@@ -86,15 +86,6 @@ void *best_fit(unsigned int size) {
 
 }
 
-//'''''''''''''''//
-//              //
-// ______________________________________________________________________
-// |              |                  |                 |                 |
-// |FUCK MALLOC   |                  |                 |                 |
-// '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-//                                   //
-//-----------------------------------//
-
 
 void *memory_alloc(unsigned int size) {
 
@@ -167,6 +158,8 @@ int memory_free(void *valid_ptr) {
                 //printf("Uvolnujem blok + free pred ním...\n");
                 break;
             }
+
+
 
 
         }
@@ -306,6 +299,7 @@ int memory_check(void *ptr){
 
 
 #include <time.h>
+/*
 void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int minMemory, int maxMemory, int testFragDefrag) {
     srand(time(0));
     unsigned int allocated = 0;
@@ -366,18 +360,46 @@ void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int m
     float result_bytes = ((float)mallocated / allocated) * 100;
     printf("\nMemory size of %d bytes: allocated %.2f%% blocks (%.2f%% bytes).\n", random_memory, result, result_bytes);
 }
+*/
 
+void roman_test_1(char *region, char **pointer, int minBlock, int maxBlock, int minMemory, int maxMemory, int testFragDefrag){
+    memset(region, 0, 100000);
+    memory_init(region , 500);
+
+    for (int i = 0; i < 5; i++) {
+        memory_alloc(12);
+    }
+
+
+
+
+
+
+}
+
+/*
 int main() {
     char region[100000];
     char* pointer[13000];
+
+    /*
     z1_testovac(region, pointer, 8, 24, 50, 300, 1);
     z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
     z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
+
     return 0;
 }
+*/
+
+int main(){
+    char region[100000];
+    char* pointer[13000];
+
+    roman_test_1(region, pointer, 8, 24,50,300,1);
 
 
-
+    return 0;
+}
 
 
 
