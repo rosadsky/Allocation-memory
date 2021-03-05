@@ -240,37 +240,49 @@ int memory_check(void *ptr){
     HEAD *prehladavac = ukazovatel;
 
     HEAD *zaciatok = ukazovatel;
+
     HEAD *koniec = ukazovatel;
 
-    printf("MEMORY CHECKUJEM: ( %d ) *------------------------------*\n", tmp );
+    void *tmp_testik;
 
-    printf("PRED ZACIATKOM ? |%d| < |%d|\n",ptr,zaciatok);
+  //  printf("MEMORY CHECKUJEM: ( %d ) *------------------------------*\n", tmp );
 
-    if (ptr < zaciatok ){
-        printf("Je mimo na začiatku 1...\n");
+    // ak je pred začiatkom
+    // x  |ZACIATOK|    |    |    |   |     |
+    if (ptr < zaciatok || ptr == NULL ){
+        printf("Pointer je pred začiatkom...\n");
+        return 0;
     }
 
     while (prehladavac->dalsi != NULL){
+        tmp_testik = prehladavac; // kvoli pretypovaniu mal som bordel v rozmedzí medzi začiatkom hlavičky a konci
 
-        //printf("%d < %d\n",prehladavac,tmp);
-     /*   if (prehladavac < tmp){
-            printf("TRUE\n");
+        // ak sa pointer náhodou nachádza v hlavičke  |    |    |[[x]      ]|   |    |
 
-        }*/
+            if (tmp_testik < ptr && tmp_testik+sizeof(HEAD) > ptr){
+                printf("Pointer je v hlavičke...\n");
+                return 0;
+            }
 
-        printf("[%d]\n",prehladavac);
+            // ak sa pointer nachádza nie nazačiatku payloadu ale troška dalej  |    |    |[[HEAD]   X    ]|   |    |
+            /*
+            if (tmp_testik+sizeof(HEAD)<ptr && ptr < tmp_testik+sizeof(HEAD)+((HEAD*)tmp_testik)->size){
+                printf("Pointer je v polke payloadu...\n");
+                return 0;
+            }
+*/
 
-        if (ptr > zaciatok && ptr < prehladavac ){
-            printf("Je v strede...\n");
-        }
 
         koniec = prehladavac;
         prehladavac= prehladavac->dalsi;
+        //ak je pointer za koncom
+        //    ||    |    |    |   |     |KONIEC|   X
 
         if (prehladavac->dalsi == NULL){
-            printf("ZA KONCOM ? |%d|>|%d|\n\n",ptr,koniec);
-            if (ptr > koniec){
-                printf("JE MIMO\n");
+            //printf("KONIEC: %d  > %d \n",ptr,koniec);
+            if (ptr > koniec+ sizeof(HEAD) + koniec->size){
+                printf("Pointer je za koncom...\n");
+                return 0;
             }
         }
 
@@ -359,8 +371,8 @@ int main() {
     char region[100000];
     char* pointer[13000];
     z1_testovac(region, pointer, 8, 24, 50, 300, 1);
-    //z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
-    //z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
+    z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
+    z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
     return 0;
 }
 
