@@ -22,7 +22,7 @@ void memory_init(void *ptr, int size) {
 
     ukazovatel = ptr;
 
-    printf("MEMORY INIT : %d \n",size);
+   // printf("MEMORY INIT : %d \n",size);
 
 
     memset(ukazovatel,0,size);
@@ -38,7 +38,7 @@ void memory_init(void *ptr, int size) {
 
 
 
-    printf("HEAD %d , %d\n",ukazovatel,((HEAD *) ukazovatel)->dalsi);
+   // printf("HEAD %d , %d\n",ukazovatel,((HEAD *) ukazovatel)->dalsi);
     /*
         printf("Inicializácia pamate\n");
     ukazovatel = ptr;
@@ -92,10 +92,10 @@ void *best_fit(unsigned int size) {
 
 
 void *memory_alloc(unsigned int size) {
-    printf("ALLOC(%d)\n",size + sizeof(HEAD));
+    //printf("ALLOC(%d)\n",size + sizeof(HEAD));
     void *allokator = best_fit(size);
 
-    printf("BEST FIIT: %d\n",allokator);
+    //printf("BEST FIIT: %d\n",allokator);
     void *tmp_free = allokator;
 
     if (allokator == NULL){
@@ -122,7 +122,7 @@ void *memory_alloc(unsigned int size) {
 
 
 
-    printf("MALLOC RETURN->(%d)   \n", allokator+sizeof(HEAD));
+    //printf("MALLOC RETURN->(%d)   \n", allokator+sizeof(HEAD));
     return (void*) allokator + sizeof(HEAD) ;
 
 
@@ -142,10 +142,10 @@ int memory_free(void *valid_ptr) {
     int i = 0;
 
     HEAD *tmp1_pointer;
-    printf(" | %d | MEMORY FREE \n",uvolnovany);
-    printf("*-----PRECHDZANIE PAMATE----*\n");
+    //printf(" | %d | MEMORY FREE \n",uvolnovany);
+    //printf("*-----PRECHDZANIE PAMATE----*\n");
     while (tester->dalsi!=NULL){
-        printf("ukazovatel (%d) dalsi-> (%d)\n ",tester,tester->dalsi);
+      //  printf("ukazovatel (%d) dalsi-> (%d)\n ",tester,tester->dalsi);
         if (tester->obsadeny==0){
             //printf("FREE - %d\n",tester);
         }
@@ -156,17 +156,17 @@ int memory_free(void *valid_ptr) {
 
 
     while (prehladavac->dalsi!=NULL){
-        printf("PREDOSLY - (%d)\n",tmp_predosly);
-        printf("PREHALDAVAC[%d]->[%d]\n ",prehladavac, prehladavac->dalsi);
+       // printf("PREDOSLY - (%d)\n",tmp_predosly);
+        //printf("PREHALDAVAC[%d]->[%d]\n ",prehladavac, prehladavac->dalsi);
 
         if (prehladavac == uvolnovany){
-            printf("UVOLNUJEM ----------->> %d\n",((HEAD*)uvolnovany));
+          //  printf("UVOLNUJEM ----------->> %d\n",((HEAD*)uvolnovany));
             ((HEAD*)uvolnovany)->obsadeny = 0;
             HEAD *tmp_dalsi = prehladavac->dalsi;
             if (tmp_dalsi->obsadeny == 0){
                 ((HEAD*)uvolnovany)->dalsi = uvolnovany + (2*sizeof(HEAD)) + ((HEAD*)uvolnovany)->size + tmp_dalsi->size;
                 ((HEAD*)uvolnovany)->size += sizeof(HEAD) + tmp_dalsi->size;
-                printf("Uvolnuje blok...\n");
+            //    printf("Uvolnuje blok...\n");
                 break;
             }
 
@@ -174,7 +174,7 @@ int memory_free(void *valid_ptr) {
             if (((HEAD*)tmp_predosly)->obsadeny == 0 && i >= 1){
                 ((HEAD*)tmp_predosly)->dalsi = tmp_predosly + (2*sizeof(HEAD)) + ((HEAD*)tmp_predosly)->size + ((HEAD*)uvolnovany)->size;  // posuniem si pointer dalej
                 ((HEAD*)tmp_predosly)->size += sizeof(HEAD) + prehladavac->size;
-                printf("Uvolnujem blok + free pred ním...\n");
+                //printf("Uvolnujem blok + free pred ním...\n");
                 break;
             }
 
@@ -189,8 +189,10 @@ int memory_free(void *valid_ptr) {
     }
 
     tester= ukazovatel;
-
+/*
     printf("*-----PRECHDZANIE PO FREE----*\n");
+
+
     while (tester->dalsi!=NULL){
         printf("ukazovatel (%d) dalsi-> (%d)\n ",tester,tester->dalsi);
         if (tester->obsadeny==0){
@@ -198,7 +200,7 @@ int memory_free(void *valid_ptr) {
         }
         tester =tester->dalsi;
     }
-
+*/
 
 
 
@@ -413,31 +415,21 @@ void roman_test_1(char *region, char **pointer, int minBlock, int maxBlock, int 
     unsigned int pocet_alokacii = 0;
 
 
-    //memory_init(300, 8);
 
-    /*
-     * while (allocated <= random_memory-minBlock) {
-        random = (rand() % (maxBlock-minBlock+1)) + minBlock;
-        if (allocated + random > random_memory)
-            continue;
-        allocated += random;
-        allocated_count++;
-        pointer[i] = memory_alloc(random);
-        if (pointer[i]) {
-            i++;
-            mallocated_count++;
-            mallocated += random;
-        }
-    }
-     */
+
 
 
     int i = 0;
+
+    printf("***** ALOKOVANE BLOKY *****\n");
     while ( alokovana < pamat_random-minBlock) {
 
         alokacie_random =  generate_random_number(lower, upper);
          //všetko čo sa snažím allokovať može byť usmešne nemusí byť
         pointer[i] = memory_alloc(alokacie_random);
+
+        if (pointer[i] != 0)
+            printf("MALLOC [%d]\n",pointer[i] -sizeof(HEAD));
 
         alokovana += alokacie_random;
         pocet_alokacii++;
@@ -447,7 +439,27 @@ void roman_test_1(char *region, char **pointer, int minBlock, int maxBlock, int 
             mallocovana_pamat++; //
             mallocovana += alokacie_random; // či to prišlo
         }
-        i++;
+
+    }
+    printf("*** UVOLNOVANIE BLOKOV ****\n");
+    printf("MEMORY FREE [%d]\n",pointer[1]);
+    printf("MEMORY FREE [%d]\n",pointer[2]);
+    if (memory_check(pointer[1]) && memory_check(pointer[2])) {
+        memory_free(pointer[1]);
+        memory_free(pointer[2]);
+    }
+
+
+
+    HEAD* tmp1 = ukazovatel;
+    printf("****** TEST PAMATE ******** \n",tmp1);
+    while (tmp1->dalsi != NULL){
+        printf("(%d) ",tmp1,tmp1->dalsi);
+            if (tmp1->obsadeny == 0){
+                printf(" is FREE");
+            }
+            printf("\n");
+        tmp1 = tmp1->dalsi;
     }
 
 /*
@@ -485,22 +497,22 @@ int main() {
 */
 
 
-/*
+
 int main(){
     char region[100000];
     char* pointer[13000];
 
 
     roman_test_1(region, pointer, 8, 24,50,300);
-    roman_test_1(region, pointer, 24, 48,500,1000);
-    roman_test_1(region, pointer, 100, 256,10000,100000);
+    //roman_test_1(region, pointer, 24, 48,500,1000);
+    //roman_test_1(region, pointer, 100, 256,10000,100000);
 
 
 
     return 0;
 }
-*/
 
+/*
 int main() {
     char array[200];
     memory_init(array, 200);
@@ -526,14 +538,14 @@ int main() {
 
     // memory_check(blok2);
 
-      //memory_free(blok1);
-      //memory_free(blok2);
+      memory_free(blok1);
+      memory_free(blok2);
     // memory_free(blok3);
     // memory_free(blok2);
  //  memory_free(blok1);
 
 
-  memory_free(blok4);
+  //memory_free(blok4);
     memory_free(blok3);
     //memory_free(blok5);
   // memory_check(blok1);
@@ -557,6 +569,6 @@ int main() {
 
 }
 
-
+*/
 
 
