@@ -392,7 +392,7 @@ void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int m
 }
 
 
-void roman_test_1(char *region, char **pointer, int minBlock, int maxBlock, int minMemory, int maxMemory,int spajanie){
+void roman_test_1(char *region, char **pointer, int minBlock, int maxBlock, int minMemory, int maxMemory,int spajanie,int vypis){
     memset(region, 0, 100000);
     int lower = minBlock, upper = maxBlock;
     srand(time(0)); //current time as seed of random number generator
@@ -413,15 +413,16 @@ void roman_test_1(char *region, char **pointer, int minBlock, int maxBlock, int 
     unsigned int pocet_alokacii = 0;
 
     int i = 0;
-
-    printf("***** ALOKOVANE BLOKY *****\n");
+    if(vypis==1){
+        printf("***** ALOKOVANE BLOKY *****\n");
+    }
     while ( alokovana < pamat_random-minBlock) {
 
         alokacie_random =  generate_random_number(lower, upper);
          //všetko čo sa snažím allokovať može byť usmešne nemusí byť
         pointer[i] = memory_alloc(alokacie_random);
 
-        if (pointer[i] != 0)
+        if (pointer[i] != 0 && vypis==1)
             printf("MALLOC [%d]\n",pointer[i]-sizeof(HEAD));
 
         alokovana += alokacie_random;
@@ -475,28 +476,22 @@ void roman_test_1(char *region, char **pointer, int minBlock, int maxBlock, int 
 
 
 
-
+if(vypis == 1){
     HEAD* tmp1 = ukazovatel;
     printf("****** TEST PAMATE ******** \n",tmp1);
     while (tmp1->dalsi != NULL){
         printf("(%d) ",tmp1,tmp1->dalsi);
-            if (tmp1->obsadeny == 0){
-                printf(" is FREE");
-            }
-            printf("\n");
+        if (tmp1->obsadeny == 0){
+            printf(" is FREE");
+        }
+        printf("\n");
         tmp1 = tmp1->dalsi;
     }
 
-/*
-    for (int j = 0; j < i; j++) {
-        if (memory_check(pointer[j])) {
-            memory_free(pointer[j]);
-        }
-        else {
-            printf("Error: Wrong memory check.\n");
-        }
-    }
-*/
+}
+
+
+
 
     float vysledok = ((float)mallocovana_pamat / pocet_alokacii) * 100;
     float vysledok_bity = ((float)mallocovana / alokovana) * 100;
@@ -531,23 +526,25 @@ void scenar_1(char *region, char **pointer, int minBlock, int maxBlock, int minM
     unsigned int alokacie_random = 0;
     unsigned int pamat_random = generate_random_number(minMemory,maxMemory);
 
-
-
     memory_init(region , pamat_random);
     unsigned int mallocovana_pamat = 0;
     unsigned int mallocovana = 0;
-    unsigned int memory = 0;
+    unsigned int malocovane_byty = 0;
     unsigned int alokovana = 0;
     unsigned int pocet_alokacii = 0;
+
 
     int i = 0;
 
     printf("***** ALOKOVANE BLOKY *****\n");
-    while ( alokovana < pamat_random-minBlock) {
+    while (1) {
 
         alokacie_random =  generate_random_number(lower, upper);
         //všetko čo sa snažím allokovať može byť usmešne nemusí byť
         pointer[i] = memory_alloc(alokacie_random);
+        if (pointer[i]==NULL){
+            break;
+        }
 
         if (pointer[i] != 0)
             printf("MALLOC [%d]\n",pointer[i]-sizeof(HEAD));
@@ -557,7 +554,8 @@ void scenar_1(char *region, char **pointer, int minBlock, int maxBlock, int minM
 
         if (pointer[i]) {
             i++;
-            mallocovana_pamat++; //
+            mallocovana_pamat++;
+            //malocovane_byty+=alokacie_random;//
             mallocovana += alokacie_random; // či to prišlo
         }
 
@@ -574,7 +572,7 @@ void scenar_1(char *region, char **pointer, int minBlock, int maxBlock, int minM
     }
 
     HEAD* tmp1 = ukazovatel;
-    printf("****** TEST PAMATE ******** \n",tmp1);
+    /*printf("****** TEST PAMATE ******** \n",tmp1);
     while (tmp1->dalsi != NULL){
         printf("(%d) ",tmp1,tmp1->dalsi);
         if (tmp1->obsadeny == 0){
@@ -583,20 +581,19 @@ void scenar_1(char *region, char **pointer, int minBlock, int maxBlock, int minM
         printf("\n");
         tmp1 = tmp1->dalsi;
     }
-
-/*
-    for (int j = 0; j < i; j++) {
-        if (memory_check(pointer[j])) {
-            memory_free(pointer[j]);
-        }
-        else {
-            printf("Error: Wrong memory check.\n");
-        }
-    }
 */
 
-    float vysledok = ((float)mallocovana_pamat / pocet_alokacii) * 100;
-    float vysledok_bity = ((float)mallocovana / alokovana) * 100;
+/*
+ *
+ * float result = ((float)mallocated_count / allocated_count) * 100;
+    float result_bytes = ((float)mallocated / allocated) * 100;
+ */
+
+    printf("MALLOC :%d / %d POCET ALOKACII ",mallocovana_pamat,pocet_alokacii);
+
+    float vysledok = ((float)mallocovana_pamat/ pocet_alokacii) * 100;
+
+    float vysledok_bity = ((float)mallocovana / (float)pamat_random) * 100;
 
 
 
@@ -608,7 +605,7 @@ void scenar_1(char *region, char **pointer, int minBlock, int maxBlock, int minM
     printf("*----------- VYSLEDOK TESTU -----------*\n"
            "VELKOST PAMATE:    %d bitov \n"
            "ALOKOANYCH BLOKOV: %.2f%%\n"
-           "POCET BITOV:       %.2f%%\n"
+           "POCET BYTOV:       %.2f%%\n"
            "POCET HLAVICIEK:   %d\n"
            "FRAGMENTACIA:      %d/%d [%.2f%%]\n",
            pamat_random, vysledok, vysledok_bity,
@@ -632,14 +629,16 @@ int main(){
     //SPAJANIE 0- bez memory free
     //         1- spajanie [VOLNY][UVOLNOVANY]
     //         2- spajanie [UVOLNOVANY][VOLNY]
-    //
-    roman_test_1(region, pointer, 8, 24,150,500,1);
-    roman_test_1(region, pointer, 8, 24,150,500,2);
-    roman_test_1(region, pointer, 8, 24,300,1000,3);
+    //VYPIS 1- ANO
+    roman_test_1(region, pointer, 8, 24,150,500,1,1);
+    roman_test_1(region, pointer, 8, 24,150,500,2,1);
+    roman_test_1(region, pointer, 8, 24,300,1000,3,1);
 
     scenar_1(region, pointer, 8, 24,24,50,1);
     scenar_1(region, pointer, 8, 24,24,100,1);
     scenar_1(region, pointer, 8, 24,24,200,1);
+    scenar_1(region, pointer, 500, 5000,1000,30000,1);
+    //roman_test_1(region, pointer, 8, 24,1000,5000,0,0);
 
     //roman_test_1(region, pointer, 100, 256,10000,100000);
 
@@ -714,8 +713,8 @@ int main() {
 
 
     z1_testovac(region, pointer, 8, 24, 50, 300, 1);
-    //z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
-    //z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
+    z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
+    z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
 
     return 0;
 }
