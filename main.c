@@ -97,7 +97,7 @@ void *memory_alloc(unsigned int size) {
         return NULL;
     }
 
-    //printf("ALLOC(%d)\n",size);
+    printf("ALLOC(%d)\n",size + sizeof(HEAD));
 
     ((HEAD*)allokator)->obsadeny = 1; // obsadený
 
@@ -136,7 +136,7 @@ int memory_free(void *valid_ptr) {
     int i = 0;
 
     HEAD *tmp1_pointer;
-    //printf(" / %d /MEMORY FREE \n",uvolnovany);
+   // printf(" | %d | MEMORY FREE \n",uvolnovany);
     while (prehladavac->dalsi!=NULL){
         //printf("PREDOSLY - (%d)\n",tmp_predosly);
         //printf("PREHALDAVAC[%d]->[%d]\n ",prehladavac, prehladavac->dalsi);
@@ -147,7 +147,7 @@ int memory_free(void *valid_ptr) {
             if (tmp_dalsi->obsadeny == 0){
                 ((HEAD*)uvolnovany)->dalsi = uvolnovany + (2*sizeof(HEAD)) + ((HEAD*)uvolnovany)->size + tmp_dalsi->size;
                 ((HEAD*)uvolnovany)->size += sizeof(HEAD) + tmp_dalsi->size;
-                //printf("Uvolnuje blok...\n");
+               // printf("Uvolnuje blok...\n");
                 break;
             }
 
@@ -155,7 +155,7 @@ int memory_free(void *valid_ptr) {
             if (((HEAD*)tmp_predosly)->obsadeny == 0 && i>1){
                 ((HEAD*)tmp_predosly)->dalsi = tmp_predosly + (2*sizeof(HEAD)) + ((HEAD*)tmp_predosly)->size + ((HEAD*)uvolnovany)->size;  // posuniem si pointer dalej
                 ((HEAD*)tmp_predosly)->size += sizeof(HEAD) + prehladavac->size;
-                //printf("Uvolnujem blok + free pred ním...\n");
+              //  printf("Uvolnujem blok + free pred ním...\n");
                 break;
             }
 
@@ -169,16 +169,16 @@ int memory_free(void *valid_ptr) {
 
     }
 
-    /*
-    printf("*-----TESTER----*\n");
+
+    //printf("*-----TESTER----*\n");
     while (tester->dalsi!=NULL){
-        printf("(%d) -> (%d)\n ",tester,tester->dalsi);
+      //  printf("(%d) -> (%d)\n ",tester,tester->dalsi);
         if (tester->obsadeny==0){
-            printf("FREE - %d\n",tester);
+        //    printf("FREE - %d\n",tester);
         }
         tester =tester->dalsi;
     }
-    */
+
 
 
 /*
@@ -299,7 +299,7 @@ int memory_check(void *ptr){
 
 
 #include <time.h>
-/*
+
 void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int minMemory, int maxMemory, int testFragDefrag) {
     srand(time(0));
     unsigned int allocated = 0;
@@ -360,7 +360,7 @@ void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int m
     float result_bytes = ((float)mallocated / allocated) * 100;
     printf("\nMemory size of %d bytes: allocated %.2f%% blocks (%.2f%% bytes).\n", random_memory, result, result_bytes);
 }
-*/
+
 
 void roman_test_1(char *region, char **pointer, int minBlock, int maxBlock, int minMemory, int maxMemory, int testFragDefrag){
     memset(region, 0, 100000);
@@ -382,14 +382,15 @@ int main() {
     char region[100000];
     char* pointer[13000];
 
-    /*
+
     z1_testovac(region, pointer, 8, 24, 50, 300, 1);
-    z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
-    z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
+    //z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
+    //z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
 
     return 0;
 }
 */
+
 
 int main(){
     char region[100000];
