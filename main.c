@@ -297,6 +297,13 @@ int memory_check(void *ptr){
     return 1;
 };
 
+int generate_random_number(int l, int r) { //this will generate random number in range l and r
+    int i;
+    int rand_num = (rand() % (r - l + 1)) + l;
+    //printf("%d ", rand_num);
+    return rand_num;
+}
+
 
 #include <time.h>
 
@@ -364,13 +371,78 @@ void z1_testovac(char *region, char **pointer, int minBlock, int maxBlock, int m
 
 void roman_test_1(char *region, char **pointer, int minBlock, int maxBlock, int minMemory, int maxMemory, int testFragDefrag){
     memset(region, 0, 100000);
-    memory_init(region , 500);
 
-    for (int i = 0; i < 5; i++) {
-        memory_alloc(12);
+
+    int lower = minBlock, upper = maxBlock, count = 1;
+    srand(time(0)); //current time as seed of random number generator
+
+    unsigned int velkost_pamate = 0;
+    velkost_pamate=600;
+
+    unsigned int alokacie_random = 0;
+    unsigned int pamat_random = generate_random_number(minMemory,maxMemory);
+
+
+
+    memory_init(region , pamat_random);
+    unsigned int mallocovana_pamat = 0;
+    unsigned int mallocovana = 0;
+    unsigned int memory = 0;
+    unsigned int alokovana = 0;
+    unsigned int pocet_alokacii = 0;
+
+
+    //memory_init(300, 8);
+
+    /*
+     * while (allocated <= random_memory-minBlock) {
+        random = (rand() % (maxBlock-minBlock+1)) + minBlock;
+        if (allocated + random > random_memory)
+            continue;
+        allocated += random;
+        allocated_count++;
+        pointer[i] = memory_alloc(random);
+        if (pointer[i]) {
+            i++;
+            mallocated_count++;
+            mallocated += random;
+        }
+    }
+     */
+
+
+    int i = 0;
+    while ( alokovana < pamat_random-minBlock) {
+
+        alokacie_random =  generate_random_number(lower, upper);
+         //všetko čo sa snažím allokovať može byť usmešne nemusí byť
+        pointer[i] = memory_alloc(alokacie_random);
+
+        alokovana += alokacie_random;
+        pocet_alokacii++;
+
+        if (pointer[i]) {
+            i++;
+            mallocovana_pamat++; //
+            mallocovana += alokacie_random; // či to prišlo
+        }
+        i++;
     }
 
+/*
+    for (int j = 0; j < i; j++) {
+        if (memory_check(pointer[j])) {
+            memory_free(pointer[j]);
+        }
+        else {
+            printf("Error: Wrong memory check.\n");
+        }
+    }
+*/
 
+    float vysledok = ((float)mallocovana_pamat / pocet_alokacii) * 100;
+    float vysledok_bity = ((float)mallocovana / alokovana) * 100;
+    printf("*-----------TEST 1-----------*\nVELKOST PAMATE:    %d bitov \nALOKOANYCH BLOKOV: %.2f%%\nPOCET BITOV:       %.2f%%\n", pamat_random, vysledok, vysledok_bity);
 
 
 
@@ -389,16 +461,18 @@ int main() {
 
     return 0;
 }
+
+
 */
-
-
 int main(){
     char region[100000];
     char* pointer[13000];
 
+
+
     roman_test_1(region, pointer, 8, 24,50,300,1);
-
-
+    roman_test_1(region, pointer, 24, 48,500,1000,1);
+    roman_test_1(region, pointer, 100, 256,10000,100000,1);
     return 0;
 }
 
