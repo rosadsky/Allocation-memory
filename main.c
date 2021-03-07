@@ -29,7 +29,6 @@ typedef struct hlavicka {
     unsigned int obsadeny;
 } HEAD;
 
-
 void memory_init(void *ptr, int size) {
 /*
  * Nastavenie veľkosti pamate,
@@ -46,12 +45,10 @@ void memory_init(void *ptr, int size) {
 
 }
 
-
 void *best_fit(unsigned int size) {
 
     /*
      * Hladám najlepšie možné miesto v pamati ktoré potom môžem alokovať v memory_alloc funkcií
-     *
      */
     HEAD *hladam_moznost = ukazovatel;
     unsigned int najlepsia_moznost = 0;
@@ -70,7 +67,6 @@ void *best_fit(unsigned int size) {
     return najlepsi_blok;
 
 }
-
 
 void *memory_alloc(unsigned int size) {
 
@@ -101,7 +97,6 @@ void *memory_alloc(unsigned int size) {
 
     return (void*) allokator + sizeof(HEAD);
 }
-
 
 int memory_free(void *valid_ptr) {
 
@@ -145,11 +140,9 @@ int memory_free(void *valid_ptr) {
         tmp_predosly = prehladavac;
         prehladavac= prehladavac->dalsi;
         i++;
-
     }
     tester= ukazovatel;
 };
-
 
 int memory_check(void *ptr){
 
@@ -162,21 +155,13 @@ int memory_check(void *ptr){
      *
      * 2. Pointer sa nesmie nachádzať v žiadnej hlavičke nijakého bloku
      *
-     *
-     *
      */
 
-    HEAD *tmp = ptr;
-
     HEAD *prehladavac = ukazovatel;
-
     HEAD *zaciatok = ukazovatel;
-
     HEAD *koniec = ukazovatel;
 
     void *tmp_testik;
-
-
 
     // x  |ZACIATOK|    |    |    |   |     |
     if (ptr < zaciatok || ptr == NULL ){
@@ -202,34 +187,26 @@ int memory_check(void *ptr){
         }
 
     }
-
     return 1;
 };
 
-int generate_random_number(int l, int r) { //generovanie náhodného čísla
-    int rand_num = (rand() % (r - l + 1)) + l;
+int generate_random_number(int a, int b) { //generovanie náhodného čísla
+    int rand_num = (rand() % (b - a + 1)) + a;
     return rand_num;
 }
-
-
 
 void roman_test_1(char *region, char **pointer, int minBlock, int maxBlock, int minMemory, int maxMemory,int spajanie,int vypis){
     memset(region, 0, 100000);
     int lower = minBlock, upper = maxBlock;
-    srand(time(0)); //current time as seed of random number generator
+    srand(time(0));
 
-    unsigned int velkost_pamate = 0;
-    velkost_pamate=600;
+
 
     unsigned int alokacie_random = 0;
     unsigned int pamat_random = generate_random_number(minMemory,maxMemory);
-
-
-
     memory_init(region , pamat_random);
     unsigned int mallocovana_pamat = 0;
     unsigned int mallocovana = 0;
-    unsigned int memory = 0;
     unsigned int alokovana = 0;
     unsigned int pocet_alokacii = 0;
 
@@ -316,13 +293,8 @@ if(vypis == 1){
 
     float vysledok = ((float)mallocovana_pamat / pocet_alokacii) * 100;
     float vysledok_bity = ((float)mallocovana / alokovana) * 100;
-
-
-
     int fragmentacia = mallocovana_pamat*(sizeof(HEAD));
-
-
-    float fragmentacia_percenta = ((float )fragmentacia / (float )pamat_random ) * 100.00;
+    float fragmentacia_percenta = (((float )fragmentacia + sizeof(HEAD)) / (float )pamat_random ) * 100.00;
 
     printf("*----------- VYSLEDOK TESTU -----------*\n"
            "VELKOST PAMATE:    %d bitov \n"
@@ -332,7 +304,7 @@ if(vypis == 1){
            "POCET HLAVICIEK:   %d\n"
            "FRAGMENTACIA:      %d/%d [%.2f%%]\n",
            pamat_random, vysledok,mallocovana,pamat_random,vysledok_bity,
-           mallocovana_pamat,fragmentacia,pamat_random
+           mallocovana_pamat,fragmentacia+sizeof(HEAD),pamat_random
             ,fragmentacia_percenta);
     printf("*----------- KONIEC TESTU ------------*\n");
 }
@@ -396,7 +368,7 @@ void scenar_1(char *region, char **pointer, int minBlock, int maxBlock, int minM
 
     int fragmentacia = mallocovana_pamat*(sizeof(HEAD));
 
-    float fragmentacia_percenta = ((float )fragmentacia / (float )pamat_random ) * 100.00;
+    float fragmentacia_percenta = (((float )fragmentacia + sizeof(HEAD)) / (float )pamat_random ) * 100.00;
 
     printf("*----------- VYSLEDOK TESTU -----------*\n"
            "VELKOST PAMATE:    %d bitov \n"
@@ -406,12 +378,10 @@ void scenar_1(char *region, char **pointer, int minBlock, int maxBlock, int minM
            "POCET HLAVICIEK:   %d\n"
            "FRAGMENTACIA:      %d/%d [%.2f%%]\n",
            pamat_random, vysledok,mallocovana,pamat_random,vysledok_bity,
-           mallocovana_pamat,fragmentacia,pamat_random
+           mallocovana_pamat,fragmentacia+ sizeof(HEAD),pamat_random
             ,fragmentacia_percenta);
     printf("*----------- KONIEC TESTU ------------*\n");
 }
-
-
 
 int main(){
     char region[100000];
@@ -437,7 +407,7 @@ int main(){
 
     printf("\n///////////// MOJE TESTY ////////////////\n\n");
     roman_test_1(region, pointer, 8, 24,150,500,1,1);
-    roman_test_1(region, pointer, 8, 24,150,500,2,1);
+    roman_test_1(region, pointer, 24, 32,500,900,2,1);
     roman_test_1(region, pointer, 8, 24,300,1000,3,1);
 
 
@@ -446,16 +416,3 @@ int main(){
     return 0;
 }
 
-/*
-int main() {
-    char region[100000];
-    char* pointer[13000];
-
-
-    z1_testovac(region, pointer, 8, 24, 50, 300, 1);
-    z1_testovac(region, pointer, 8, 1000, 10000, 20000, 0);
-    z1_testovac(region, pointer, 8, 35000, 50000, 99000, 0);
-    scenar_2(region, pointer, 500, 5000,1000,30000);
-    return 0;
-}
-*/
