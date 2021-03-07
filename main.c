@@ -48,32 +48,17 @@ void *best_fit(unsigned int size) {
 
     return najlepsi_blok;
 
-/*
-
-    while (hladam_moznost->dalsi != NULL) {
-        if (hladam_moznost->size >= size) {
-            printf("RETURN: %d || ADRESS: %d\n",hladam_moznost->size,hladam_moznost);
-            return hladam_moznost;
-        }
-        hladam_moznost= hladam_moznost->dalsi;
-    }
-
-*/
-
 }
 
 
 void *memory_alloc(unsigned int size) {
-    //printf("ALLOC(%d)\n",size + sizeof(HEAD));
-    void *allokator = best_fit(size);
 
-    //printf("BEST FIIT: %d\n",allokator);
+    void *allokator = best_fit(size);
     void *tmp_free = allokator;
 
     if (allokator == NULL){
         return NULL;
     }
-
 
     ((HEAD*)allokator)->obsadeny = 1; // obsadený
 
@@ -91,13 +76,7 @@ void *memory_alloc(unsigned int size) {
     //  []-> []   []
     ((HEAD*)allokator)->dalsi = tmp_free; // spájam obsadený blok s voľným
 
-
-
-
-    //printf("MALLOC RETURN->(%d)   \n", allokator+sizeof(HEAD));
     return (void*) allokator + sizeof(HEAD) ;
-
-
 }
 
 
@@ -111,28 +90,12 @@ int memory_free(void *valid_ptr) {
      void* uvolnovany = valid_ptr - sizeof(HEAD);
 
      void* tmp_predosly= ukazovatel;
-    int i = 0;
+     int i = 0;
 
     HEAD *tmp1_pointer;
-    //printf(" | %d | MEMORY FREE \n",uvolnovany);
-    //printf("*-----PRECHDZANIE PAMATE----*\n");
-    while (tester->dalsi!=NULL){
-      //  printf("ukazovatel (%d) dalsi-> (%d)\n ",tester,tester->dalsi);
-        if (tester->obsadeny==0){
-            //printf("FREE - %d\n",tester);
-        }
-        tester =tester->dalsi;
-    }
-
-
-
 
     while (prehladavac->dalsi!=NULL){
-       // printf("PREDOSLY - (%d)\n",tmp_predosly);
-        //printf("PREHALDAVAC[%d]->[%d]\n ",prehladavac, prehladavac->dalsi);
-
         if (prehladavac == uvolnovany){
-          //  printf("UVOLNUJEM ----------->> %d\n",((HEAD*)uvolnovany));
             ((HEAD*)uvolnovany)->obsadeny = 0;
             HEAD *tmp_dalsi = prehladavac->dalsi;
             if (tmp_dalsi->obsadeny == 0){
@@ -159,65 +122,7 @@ int memory_free(void *valid_ptr) {
         i++;
 
     }
-
     tester= ukazovatel;
-/*
-    printf("*-----PRECHDZANIE PO FREE----*\n");
-
-
-    while (tester->dalsi!=NULL){
-        printf("ukazovatel (%d) dalsi-> (%d)\n ",tester,tester->dalsi);
-        if (tester->obsadeny==0){
-            printf("FREE - %d - %d\n",tester, tester->size);
-        }
-        tester =tester->dalsi;
-    }
-*/
-
-
-
-/*
-    while (1) {
-        if (prehladavac->dalsi == tmp_pointer) { // ak épointer čo prehladava nájde ten môj čo potrebujem free tak
-
-            tmp1_pointer = tmp_pointer->dalsi;
-
-
-            //Ako fungujú pointre podla mojej hlavy
-            //[prehladavac] [tmp_pointer] [ tmp1_pointer]
-
-
-
-            //[ FREE ] [ x ] [ ]
-            if (prehladavac->obsadeny < 1) { // ak je predošlý blok prázdny
-                //[ FREE ] [ ] [ ]
-                //   |----------^
-                prehladavac->dalsi = tmp_pointer->dalsi;
-                return 1;
-            }
-
-
-
-            //[FULL] [ x ] [ FULL ]
-            if (prehladavac->obsadeny == 1 && tmp1_pointer->obsadeny == 1) {
-                tmp_pointer->obsadeny = 0;
-                return 1;
-            }
-
-
-
-            //[FULL] [ x ] [    ]
-            if (tmp1_pointer->obsadeny < 0) {
-                tmp_pointer = tmp_pointer->size + sizeof(HEAD) + tmp1_pointer;
-                return 1;
-            }
-        }
-        // ak je prehladavac prazdny
-        prehladavac = prehladavac->dalsi;
-    }
-*/
-
-
 };
 
 
@@ -233,7 +138,7 @@ int memory_check(void *ptr){
 
     void *tmp_testik;
 
-  //  printf("MEMORY CHECKUJEM: ( %d ) *------------------------------*\n", tmp );
+
 
     // ak je pred začiatkom
     // x  |ZACIATOK|    |    |    |   |     |
@@ -253,12 +158,6 @@ int memory_check(void *ptr){
             }
 
             // ak sa pointer nachádza nie nazačiatku payloadu ale troška dalej  |    |    |[[HEAD]   X    ]|   |    |
-            /*
-            if (tmp_testik+sizeof(HEAD)<ptr && ptr < tmp_testik+sizeof(HEAD)+((HEAD*)tmp_testik)->size){
-                printf("Pointer je v polke payloadu...\n");
-                return 0;
-            }
-*/
 
 
         koniec = prehladavac;
@@ -276,26 +175,12 @@ int memory_check(void *ptr){
 
     }
 
-
-
-    // idem robit memory check
-    // musím zistiť či náhodou ten pointer, ktorý príde nieje v neolakovanom priestore
-    // ak je NULL ruturn 0
-    // či nieje pred hlavičkou
-    // či nieje mimo celého memory poolu
-    // či sa nenachádza v payloade
-    // on musí byť nazačiatku payloadu
-    // nemože byť na miestach hlavička + velkosť hlavičky
-    // ak je v strede payloadu tak rip
-    // ak je na začiatku payloadu tak veľkosť hlavičky, ktorá prislúcha payloadu je volna  tak return NULL;
-
     return 1;
 };
 
 int generate_random_number(int l, int r) { //this will generate random number in range l and r
     int i;
     int rand_num = (rand() % (r - l + 1)) + l;
-    //printf("%d ", rand_num);
     return rand_num;
 }
 
@@ -462,9 +347,7 @@ void scenar_1(char *region, char **pointer, int minBlock, int maxBlock, int minM
         }
         //všetko čo sa snažím allokovať može byť usmešne nemusí byť
         pointer[i] = memory_alloc(alokacie_random);
-       /* if (pointer[i]==NULL){
-            break;
-        }*/
+
 
         if (pointer[i] != 0)
             printf("MALLOC [%d]\n",pointer[i]-sizeof(HEAD));
@@ -475,36 +358,11 @@ void scenar_1(char *region, char **pointer, int minBlock, int maxBlock, int minM
         if (pointer[i]) {
             i++;
             mallocovana_pamat++;
-            //malocovane_byty+=alokacie_random;//
             mallocovana += alokacie_random; // či to prišlo
         }
 
-    }/*
-    printf("*** UVOLNOVANIE BLOKOV ****\n");
-
-    if (pointer[0]-sizeof(HEAD) != -16)
-        printf("MEMORY FREE [%d]\n",pointer[0]-sizeof(HEAD));
-    else
-        printf("MEMORY FREE [NIEJE ČO UVOLNIT]\n");
-
-    if (memory_check(pointer[0])) {
-        memory_free(pointer[0]);
     }
-*/
     HEAD* tmp1 = ukazovatel;
-    /*printf("****** TEST PAMATE ******** \n",tmp1);
-    while (tmp1->dalsi != NULL){
-        printf("(%d) ",tmp1,tmp1->dalsi);
-        if (tmp1->obsadeny == 0){
-            printf(" is FREE");
-        }
-        printf("\n");
-        tmp1 = tmp1->dalsi;
-    }
-*/
-
-
-   // printf("MALLOC :%d / %d POCET ALOKACII\n ",mallocovana_pamat,pocet_alokacii);
 
     float vysledok = ((float)mallocovana_pamat/ pocet_alokacii) * 100;
 
@@ -561,65 +419,6 @@ int main(){
 
     return 0;
 }
-
-/*
-int main() {
-    char array[200];
-    memory_init(array, 200);
-
-    void *pointer;
-
-    void *blok1;
-    void *blok2;
-    void *blok3;
-    void *blok4;
-    void *blok5;
-
-
-    pointer = ukazovatel;// ukazuje na zaciatok pola
-
-    //VYHRADIT MIESTO AZ POTOM SPAJAT
-    blok1 = memory_alloc(10);
-    blok2 = memory_alloc(2);
-    blok3 = memory_alloc(4);
-    blok4 = memory_alloc(7);
-    blok5 = memory_alloc(2);
-    //blok6 = memory_alloc(12);
-
-    // memory_check(blok2);
-
-      memory_free(blok1);
-      memory_free(blok2);
-    // memory_free(blok3);
-    // memory_free(blok2);
- //  memory_free(blok1);
-
-
-  //memory_free(blok4);
-    memory_free(blok3);
-    //memory_free(blok5);
-  // memory_check(blok1);
-
-
-    printf("velkost hlavicky %d\n", sizeof(HEAD));
-
-//vyprintujeme obsah struktur
-    while (pointer != NULL){
-        if(((HEAD*)pointer)->obsadeny == 0)
-            printf("blok free ");
-        else
-            printf("blok je obsadeny ");
-
-        printf("velkost %d, na zaciatku: %d  na konci: %d\n", ((HEAD*) pointer)->size, pointer, pointer + sizeof(HEAD) + ((HEAD*)pointer)->size);
-        pointer = ((HEAD*) pointer)->dalsi;
-    }
-
-
-    return 0;
-
-}
-
-*/
 
 /*
 int main() {
