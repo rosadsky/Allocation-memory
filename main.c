@@ -22,39 +22,11 @@ void memory_init(void *ptr, int size) {
 
     ukazovatel = ptr;
 
-   // printf("MEMORY INIT : %d \n",size);
-
-
     memset(ukazovatel,0,size);
-
-  //  ((HEAD *) ukazovatel)->size = 0;
- //   ((HEAD *) ukazovatel)->dalsi = tmp_pointer + sizeof(HEAD);
-
 
      ((HEAD *) ukazovatel)->size = size - sizeof(HEAD);
      ((HEAD *) ukazovatel)->dalsi = NULL;
      ((HEAD *) ukazovatel)->obsadeny = 0;
-
-
-
-
-   // printf("HEAD %d , %d\n",ukazovatel,((HEAD *) ukazovatel)->dalsi);
-    /*
-        printf("Inicializácia pamate\n");
-    ukazovatel = ptr;
-    HEAD *tmp_pointer = (HEAD *)ukazovatel;
-
-
-    tmp_pointer->size = size - sizeof(HEAD);
-    tmp_pointer->dalsi = NULL;
-
-
-    HEAD *temp = ukazovatel + sizeof(HEAD);
-    temp->dalsi = NULL;
-    temp->size = size - 2 * (sizeof(HEAD));
-    temp->obsadeny = 0;
-    tmp_pointer->dalsi = temp;
-     */
 
 }
 
