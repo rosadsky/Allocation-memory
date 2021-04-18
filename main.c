@@ -297,7 +297,7 @@ if(vypis == 1){
     float fragmentacia_percenta = (((float )fragmentacia + sizeof(HEAD)) / (float )pamat_random ) * 100.00;
 
     printf("*----------- VYSLEDOK TESTU -----------*\n"
-           "VELKOST PAMATE:    %d bitov \n"
+           "VELKOST PAMATE:    %d bytov \n"
            "USPEŠNE ALOK.:     %.2f%% pokusov\n"
            "ALOKOVANE BLOKY:   %d%/%d\n"
            "POCET BYTOV:       %.2f%%\n"
@@ -371,7 +371,7 @@ void scenar_1(char *region, char **pointer, int minBlock, int maxBlock, int minM
     float fragmentacia_percenta = (((float )fragmentacia + sizeof(HEAD)) / (float )pamat_random ) * 100.00;
 
     printf("*----------- VYSLEDOK TESTU -----------*\n"
-           "VELKOST PAMATE:    %d bitov \n"
+           "VELKOST PAMATE:    %d bytov \n"
            "USPEŠNE ALOK.:     %.2f%% pokusov\n"
            "ALOKOVANE BLOKY:   %d%/%d\n"
            "POCET BYTOV:       %.2f%%\n"
